@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet restore LmsCompanion.slnx
+      - run: dotnet build LmsCompanion.slnx --no-restore --configuration Release
+      - run: dotnet test LmsCompanion.slnx --no-build --configuration Release
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/lms-companion-web/package-lock.json
+      - run: npm ci
+        working-directory: frontend/lms-companion-web
+      - run: npm run build
+        working-directory: frontend/lms-companion-web

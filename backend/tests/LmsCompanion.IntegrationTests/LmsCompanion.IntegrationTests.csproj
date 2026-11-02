@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LmsCompanion.Api\LmsCompanion.Api.csproj" />
+    <ProjectReference Include="..\..\src\LmsCompanion.Application\LmsCompanion.Application.csproj" />
+    <ProjectReference Include="..\..\src\LmsCompanion.Infrastructure\LmsCompanion.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\LmsCompanion.Mcp\LmsCompanion.Mcp.csproj" />
+    <ProjectReference Include="..\..\src\LmsCompanion.Mcp.Local\LmsCompanion.Mcp.Local.csproj" />
+  </ItemGroup>
+
+</Project>

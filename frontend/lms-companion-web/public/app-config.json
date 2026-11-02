@@ -1,0 +1,11 @@
+{
+  "apiBaseUrl": "http://localhost:5150",
+  "oidc": {
+    "authority": "https://dev-33v7apnrp2wvameo.us.auth0.com/",
+    "clientId": "7yuzkVr45a4Hq3bYVryWpTiV0JS7Ht50",
+    "scope": "openid profile read:lms",
+    "audience": "https://lms-companion-api"
+  },
+  "canvasInstitutionId": ""
+  ,"allowPersonalTokenTesting": true
+}

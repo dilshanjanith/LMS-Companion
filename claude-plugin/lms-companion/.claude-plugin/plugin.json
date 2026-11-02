@@ -1,0 +1,6 @@
+{
+  "name": "lms-companion",
+  "displayName": "LMS Companion",
+  "description": "Study from live Canvas learning material through the authenticated LMS Companion MCP server.",
+  "version": "0.3.0"
+}

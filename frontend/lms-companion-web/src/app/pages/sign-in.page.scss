@@ -1,0 +1,34 @@
+:host { display: block; min-height: 100vh; }
+.sign-in-page { display: grid; grid-template-columns: minmax(440px, 1fr) minmax(420px, .92fr); min-height: 100vh; background: #fff; }
+.welcome-panel { display: flex; flex-direction: column; padding: 38px clamp(32px, 7vw, 112px) 28px; }
+.brand-lockup { display: flex; align-items: center; gap: 12px; color: #21463d; font-size: 15px; font-weight: 750; letter-spacing: -.025em; }
+.brand-mark { display: flex; align-items: end; gap: 3px; width: 30px; height: 30px; padding: 6px; border-radius: 10px; background: #e2f1e9; }
+.brand-mark span { width: 4px; border-radius: 4px; background: #327d69; }
+.brand-mark span:nth-child(1) { height: 10px; }.brand-mark span:nth-child(2) { height: 17px; }.brand-mark span:nth-child(3) { height: 13px; }
+.welcome-copy { width: min(100%, 520px); margin: auto 0; padding: 72px 0 60px; }
+.eyebrow { margin: 0 0 22px; color: #62887b; font-size: 11px; font-weight: 800; letter-spacing: .16em; }
+h1 { max-width: 510px; margin: 0; color: #1c3c34; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(42px, 5.2vw, 66px); font-weight: 500; letter-spacing: -.055em; line-height: 1.06; }
+.intro { max-width: 465px; margin: 22px 0 30px; color: #6f7d77; font-size: 16px; line-height: 1.75; }
+.primary-button { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; gap: 14px; padding: 0 22px; border: 0; border-radius: 12px; background: #216d5c; color: white; font-size: 14px; font-weight: 700; box-shadow: 0 9px 20px rgb(33 109 92 / 16%); transition: background .18s, transform .18s; }
+.primary-button:hover:not(:disabled) { background: #175b4f; transform: translateY(-1px); }
+.sign-in-button { min-width: 220px; }
+.small-note { max-width: 390px; margin: 17px 0 0; color: #819089; font-size: 12px; line-height: 1.6; }
+.welcome-footer { display: flex; align-items: center; gap: 9px; color: #77867f; font-size: 12px; }
+.status-dot { width: 8px; height: 8px; border-radius: 99px; background: #4b9a7d; box-shadow: 0 0 0 4px #e7f4ec; }
+.notice { display: flex; flex-direction: column; gap: 5px; margin: 0 0 18px; padding: 14px 16px; border: 1px solid #dce9df; border-radius: 12px; background: #f6faf7; color: #47665a; font-size: 13px; line-height: 1.5; }
+.notice code { font-size: 12px; }.notice-error { border-color: #f0d3cb; background: #fff7f4; color: #8e463d; }
+.spinner { width: 15px; height: 15px; border: 2px solid rgb(255 255 255 / 45%); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.visual-panel { position: relative; display: grid; place-items: center; overflow: hidden; min-height: 100vh; background: radial-gradient(ellipse at 50% 40%, #e6f0e4 0%, #d6e8db 42%, #c7dfd3 100%); }
+.visual-panel::before { position: absolute; inset: 0; background-image: radial-gradient(#427d68 0.6px, transparent .6px); background-size: 19px 19px; opacity: .14; content: ''; }
+.orbit { position: absolute; width: 590px; height: 590px; border: 1px solid rgb(66 119 99 / 14%); border-radius: 50%; }.orbit-one { transform: translate(-16px, 18px); }.orbit-two { width: 450px; height: 450px; transform: translate(15px, 18px); }
+.preview-card { z-index: 1; width: min(390px, calc(100% - 44px)); padding: 25px 25px 18px; border: 1px solid rgb(255 255 255 / 80%); border-radius: 22px; background: rgb(255 255 255 / 93%); box-shadow: 0 24px 80px rgb(41 77 62 / 17%); transform: rotate(-2deg); }
+.preview-top, .preview-row, .preview-footer { display: flex; align-items: center; }.preview-top { justify-content: space-between; }.preview-label { color: #779086; font-size: 10px; font-weight: 800; letter-spacing: .16em; }.preview-menu { color: #8ba197; letter-spacing: 3px; }
+.preview-title { margin: 19px 0 20px; color: #20473c; font-family: Georgia, 'Times New Roman', serif; font-size: 31px; letter-spacing: -.04em; line-height: 1.05; }
+.preview-row { gap: 13px; min-height: 66px; border-top: 1px solid #edf1ed; }.day-pill { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: #e4f3ea; color: #3b8269; font-size: 9px; font-weight: 800; }.day-pill-gold { background: #fff0d7; color: #bb8241; }.day-pill-blue { background: #e8edf8; color: #6b7fa9; }
+.preview-task { display: grid; flex: 1; gap: 4px; }.preview-task strong { color: #315449; font-size: 12px; }.preview-task small { color: #87968f; font-size: 10px; }.task-dot { width: 7px; height: 7px; border-radius: 50%; background: #6eae8e; }.task-dot-gold { background: #e2ae57; }.task-dot-blue { background: #8699c1; }
+.preview-footer { justify-content: space-between; margin-top: 15px; padding-top: 13px; border-top: 1px solid #edf1ed; color: #96a49d; font-size: 10px; }.sparkle { color: #76a58e; font-size: 19px; }
+.floating-note { z-index: 2; position: absolute; display: flex; align-items: center; gap: 10px; padding: 12px 15px; border: 1px solid rgb(255 255 255 / 88%); border-radius: 14px; background: rgb(255 255 255 / 88%); box-shadow: 0 12px 32px rgb(40 78 61 / 10%); color: #7b8e85; font-size: 10px; line-height: 1.45; transform: rotate(3deg); }.floating-note strong { color: #305a4d; font-size: 11px; }.note-top { top: 21%; left: 9%; }.note-bottom { right: 9%; bottom: 22%; transform: rotate(-3deg); }.note-icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: #f0f5df; color: #98a85c; font-size: 17px; }.progress-ring { display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid #afd3be; border-radius: 50%; color: #508c70; font-size: 16px; }
+.visual-caption { position: absolute; bottom: 28px; z-index: 1; margin: 0; color: #557b6a; font-family: Georgia, 'Times New Roman', serif; font-size: 15px; font-style: italic; }
+@media (max-width: 900px) { .sign-in-page { grid-template-columns: 1fr; }.welcome-panel { min-height: 100vh; padding: 28px clamp(24px, 8vw, 80px); }.welcome-copy { margin: auto 0; padding: 64px 0; }.visual-panel { display: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }

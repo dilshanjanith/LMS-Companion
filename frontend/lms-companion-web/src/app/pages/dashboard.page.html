@@ -1,0 +1,188 @@
+<div class="dashboard-layout">
+  <aside class="sidebar" aria-label="Campus Companion">
+    <a class="brand-lockup" routerLink="/dashboard" aria-label="Campus Companion home">
+      <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span>Campus Companion</span>
+    </a>
+
+    <div class="sidebar-label">YOUR SPACE</div>
+    <nav class="primary-nav" aria-label="Dashboard sections">
+      @for (item of navigation; track item.id) {
+        <button type="button" [class.active]="activeSection() === item.id" [attr.aria-current]="activeSection() === item.id ? 'page' : null" (click)="selectSection(item.id)">
+          <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span><span>{{ item.label }}</span>
+        </button>
+      }
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="account-mini"><span class="avatar">{{ auth.displayName().slice(0, 1).toUpperCase() }}</span><span class="account-name"><strong>{{ auth.displayName() }}</strong><small>Student account</small></span></div>
+      <button class="sign-out-button" type="button" (click)="signOut()"><span aria-hidden="true">↪</span> Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main-content" id="main-content">
+    <header class="topbar">
+      <div><p class="eyebrow">{{ today | date:'EEEE, MMMM d' }}</p><h1>Good to have you here<span class="wave" aria-hidden="true">✦</span></h1></div>
+      <div class="topbar-actions">
+        @if (connections().length > 1) {
+          <label class="connection-select-label" for="connection-select">Canvas account</label>
+          <select id="connection-select" class="connection-select" [value]="selectedConnectionId() ?? ''" (change)="onConnectionChange($event)">
+            <option value="">Choose an account</option>
+            @for (connection of connections(); track connection.id) {
+              @if (isConnected(connection.status)) { <option [value]="connection.id">{{ providerLabel(connection.provider) }} · {{ connection.baseUrl }}</option> }
+            }
+          </select>
+        }
+        <button class="icon-button" type="button" aria-label="Refresh dashboard" [disabled]="loading()" (click)="refresh()"><span aria-hidden="true">↻</span></button>
+        <button class="profile-button" type="button" (click)="signOut()" [attr.aria-label]="'Sign out, ' + auth.displayName()">{{ auth.displayName().slice(0, 1).toUpperCase() }}</button>
+      </div>
+    </header>
+
+    @if (actionMessage()) { <div class="banner banner-success" role="status"><span aria-hidden="true">✓</span>{{ actionMessage() }}<button type="button" aria-label="Dismiss message" (click)="actionMessage.set(null)">×</button></div> }
+    @if (error()) { <div class="banner banner-error" role="alert"><span aria-hidden="true">!</span>{{ error() }}<button type="button" aria-label="Dismiss error" (click)="error.set(null)">×</button></div> }
+
+    <section class="connection-strip" aria-label="Connected learning accounts">
+      <div class="connection-strip-copy"><span class="canvas-mark" aria-hidden="true">C</span><span><strong>Canvas connection</strong><small>{{ connectedCount() }} {{ connectedCount() === 1 ? 'account' : 'accounts' }} connected</small></span></div>
+      <div class="connection-strip-actions">
+        <label for="institution-select">Institution</label>
+        <select id="institution-select" class="connection-select" [value]="selectedInstitutionId()" (change)="selectInstitution($event)" [disabled]="loading() || connecting()">
+          <option value="">Choose an institution</option>
+          @for (institution of institutions(); track institution.id) {
+            <option [value]="institution.id">{{ institution.name }}{{ institution.canConnect ? '' : ' — awaiting approval' }}</option>
+          }
+        </select>
+        @if (connections().length) {
+          <button class="text-button" type="button" (click)="toggleConnectionManager()">Manage accounts</button>
+        }
+        <button class="connect-button" type="button" [disabled]="!canConnect()" (click)="connectCanvas()">
+          @if (connecting()) { <span class="button-spinner" aria-hidden="true"></span> Connecting… }
+          @else { <span aria-hidden="true">+</span> {{ reconnectRequiredCount() ? 'Reconnect Canvas' : 'Connect Canvas' }} }
+        </button>
+      </div>
+    </section>
+
+    @if (expandedConnectionId()) {
+      <section class="connection-manager" aria-label="Manage Canvas accounts">
+        <div class="manager-heading"><div><p class="eyebrow">CONNECTED ACCOUNTS</p><h2>Your learning spaces</h2></div><button class="close-button" type="button" aria-label="Close account manager" (click)="expandedConnectionId.set(null)">×</button></div>
+        @for (connection of connections(); track connection.id) {
+          <div class="managed-connection">
+            <span class="canvas-mark" aria-hidden="true">C</span>
+            <span class="managed-copy"><strong>{{ providerLabel(connection.provider) }}</strong><small>{{ connection.baseUrl }}</small></span>
+            <span class="status-pill" [class.status-connected]="isConnected(connection.status)" [class.status-attention]="!isConnected(connection.status)">{{ statusLabel(connection.status) }}</span>
+            @if (connection.status !== 'Disconnected' && connection.status !== 2) { <button class="disconnect-button" type="button" (click)="disconnect(connection)">Disconnect</button> }
+          </div>
+        }
+        @if (!connections().length) { <p class="empty-line">No Canvas accounts are connected yet.</p> }
+      </section>
+    }
+
+    @if (loading()) {
+      <section class="loading-panel" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><strong>Gathering your learning details</strong><span>This should only take a moment.</span></section>
+    } @else if (!connections().length || connectedCount() === 0) {
+      <section class="empty-dashboard" aria-live="polite" aria-labelledby="empty-dashboard-title">
+        <div class="empty-art" aria-hidden="true"><span class="empty-sun"></span><span class="empty-book">▤</span><span class="empty-leaf">✧</span></div>
+        <p class="eyebrow">A FRESH START</p>
+        <h2 id="empty-dashboard-title">Let’s bring your Canvas courses in.</h2>
+        <p>Connect your school’s Canvas account to see your courses, deadlines, and class schedule here.</p>
+        @if (!institutions().length) { <div class="setup-note" role="status">No institutions are available for this workspace yet.</div> }
+        @for (institution of institutions(); track institution.id) {
+          @if (institution.id === selectedInstitutionId() && !institution.canConnect) {
+            <div class="setup-note" role="status">{{ institution.name }} is awaiting university approval. Live learning data will become available after the integration is enabled and you authorize access.</div>
+          }
+        }
+        <button class="connect-button connect-large" type="button" [disabled]="!canConnect()" (click)="connectCanvas()">Connect Canvas <span aria-hidden="true">↗</span></button>
+        @if (config.current.allowPersonalTokenTesting) {
+          <div class="setup-note">
+            <label for="personal-canvas-token">Test with your own Canvas access token</label>
+            <input id="personal-canvas-token" type="password" autocomplete="off" [value]="personalToken()" (input)="personalToken.set($any($event.target).value)" />
+            <button type="button" [disabled]="connecting() || !selectedInstitutionId() || !personalToken().trim()" (click)="connectPersonalToken()">Connect my token</button>
+            <small>Only your account is connected. The token is sent to the backend and stored encrypted.</small>
+          </div>
+        }
+        <small>Your Canvas password is entered on your institution’s Canvas sign-in page.</small>
+      </section>
+    } @else if (connections().length > 1 && !selectedConnectionId()) {
+      <section class="selection-panel" role="status"><div class="selection-icon" aria-hidden="true">⌁</div><h2>Choose a learning space</h2><p>You have more than one connected Canvas account. Choose one above to view its courses and schedule.</p></section>
+    } @else {
+      @if (activeSection() === 'overview') {
+        <section class="hero-card">
+          <div class="hero-copy"><p class="eyebrow">YOUR SEMESTER, AT A GLANCE</p><h2>Make room for<br><em>good work.</em></h2><p>A thoughtful overview of the things you’re learning and the things coming up.</p><button class="hero-link" type="button" (click)="selectSection('courses')">Explore your courses <span aria-hidden="true">→</span></button></div>
+          <div class="hero-illustration" aria-hidden="true"><div class="hero-plant"><span></span><span></span><span></span><i></i></div><div class="hero-disc"></div><div class="hero-book book-back"></div><div class="hero-book book-front"><div></div><b></b><b></b><b></b></div><div class="hero-spark spark-one">✦</div><div class="hero-spark spark-two">✧</div></div>
+        </section>
+
+        <section class="stat-grid" aria-label="Learning summary">
+          <article class="stat-card"><span class="stat-icon stat-icon-green" aria-hidden="true">▤</span><span class="stat-label">COURSES</span><strong>{{ courses().length }}</strong><small>{{ courses().length === 1 ? 'course in progress' : 'courses in progress' }}</small></article>
+          <article class="stat-card"><span class="stat-icon stat-icon-gold" aria-hidden="true">✓</span><span class="stat-label">UP NEXT</span><strong>{{ assignments().length }}</strong><small>{{ assignments().length === 1 ? 'assignment to plan for' : 'assignments to plan for' }}</small></article>
+          <article class="stat-card"><span class="stat-icon stat-icon-blue" aria-hidden="true">▦</span><span class="stat-label">ON YOUR CALENDAR</span><strong>{{ schedule().length }}</strong><small>{{ schedule().length === 1 ? 'upcoming class or event' : 'upcoming classes and events' }}</small></article>
+        </section>
+
+        <section class="content-grid">
+          <article class="content-card assignments-card">
+            <div class="section-heading"><div><p class="eyebrow">THE NEXT 30 DAYS</p><h2>Coming up</h2></div><button class="text-button" type="button" (click)="selectSection('assignments')">See all <span aria-hidden="true">→</span></button></div>
+            @if (!assignments().length) { <div class="quiet-empty"><span aria-hidden="true">✧</span><p>You’re all caught up. Nothing due in the next 30 days.</p></div> }
+            @else {
+              @for (assignment of assignments().slice(0, 4); track assignment.id) {
+                <div class="assignment-row"><div class="date-badge"><strong>{{ assignment.dueAt | date:'d' }}</strong><span>{{ assignment.dueAt | date:'MMM' }}</span></div><div class="assignment-details"><strong>{{ assignment.title }}</strong><small>{{ courseName(assignment.courseId) }}</small></div><span class="due-label">{{ dueLabel(assignment.dueAt) }}</span></div>
+              }
+            }
+          </article>
+          <article class="content-card mini-schedule-card">
+            <div class="section-heading"><div><p class="eyebrow">YOUR CALENDAR</p><h2>Class schedule</h2></div><button class="text-button" type="button" (click)="selectSection('schedule')">View <span aria-hidden="true">→</span></button></div>
+            @if (!schedule().length) { <div class="quiet-empty"><span aria-hidden="true">◷</span><p>No events on your calendar for the next 30 days.</p></div> }
+            @else {
+              @for (event of schedule().slice(0, 3); track event.id) {
+                <div class="schedule-row"><div class="time-dot"><span></span></div><div><strong>{{ event.title }}</strong><small>{{ event.startsAt | date:'EEE, MMM d · h:mm a' }} @if (event.location) { · {{ event.location }} }</small></div></div>
+              }
+            }
+          </article>
+        </section>
+      } @else if (activeSection() === 'courses') {
+        <section class="page-intro"><p class="eyebrow">KEEP EXPLORING</p><h2>My courses</h2><p>Your active courses, all in one place.</p></section>
+        @if (!courses().length) { <div class="empty-list"><span aria-hidden="true">▤</span><strong>No active courses found</strong><p>Your courses will appear here when Canvas makes them available.</p></div> }
+        <section class="course-grid" aria-label="Active courses">
+          @for (course of courses(); track course.id) {
+            <article class="course-card">
+              <div class="course-card-top"><span class="course-mark" [class.course-mark-gold]="$index % 3 === 1" [class.course-mark-blue]="$index % 3 === 2">{{ course.code?.slice(0, 2) || 'CC' }}</span><span class="course-role">{{ course.role || 'Course' }}</span></div>
+              <h3>{{ course.name }}</h3>
+              <p>{{ course.code || 'Canvas course' }} @if (course.term) { <span>·</span> {{ course.term }} }</p>
+              @if (selectedCourse()?.id === course.id) {
+                <div class="progress-panel" aria-live="polite">
+                  @if (loadingProgress()) { <span class="tiny-spinner" aria-label="Loading progress"></span> }
+                  @else if (progress()?.completionPercent !== null && progress()?.completionPercent !== undefined) {
+                    <div class="progress-heading"><span>Course progress</span><strong>{{ progress()?.completionPercent }}%</strong></div>
+                    <div class="progress-track"><span [style.width.%]="progress()?.completionPercent ?? 0"></span></div>
+                    @if (progress()?.completedItems !== null && progress()?.totalItems !== null) { <small>{{ progress()?.completedItems }} of {{ progress()?.totalItems }} items complete</small> }
+                  } @else { <p class="progress-explanation">{{ progress()?.explanation || 'Progress is not available for this course yet.' }}</p> }
+                </div>
+              }
+              <div class="course-actions"><button type="button" class="course-progress-button" (click)="toggleProgress(course)">{{ selectedCourse()?.id === course.id ? 'Hide progress' : 'View progress' }} <span aria-hidden="true">→</span></button>@if (course.url) { <a class="course-open-link" [href]="course.url" target="_blank" rel="noopener noreferrer" aria-label="Open {{ course.name }} in Canvas">↗</a> }</div>
+            </article>
+          }
+        </section>
+      } @else if (activeSection() === 'assignments') {
+        <section class="page-intro"><p class="eyebrow">THE NEXT 30 DAYS</p><h2>Assignments</h2><p>A little visibility can make a busy week feel lighter.</p></section>
+        <section class="content-card full-list-card">
+          @if (!assignments().length) { <div class="empty-list"><span aria-hidden="true">✓</span><strong>No upcoming assignments</strong><p>There’s nothing due in the next 30 days. Enjoy the breathing room.</p></div> }
+          @else {
+            @for (assignment of assignments(); track assignment.id) {
+              <div class="assignment-row"><div class="date-badge"><strong>{{ assignment.dueAt | date:'d' }}</strong><span>{{ assignment.dueAt | date:'MMM' }}</span></div><div class="assignment-details"><strong>{{ assignment.title }}</strong><small>{{ courseName(assignment.courseId) }} @if (assignment.pointsPossible !== null) { · {{ assignment.pointsPossible }} points }</small></div><span class="due-label">{{ dueLabel(assignment.dueAt) }}</span>@if (assignment.url) { <a class="row-link" [href]="assignment.url" target="_blank" rel="noopener noreferrer" aria-label="Open {{ assignment.title }} in Canvas">↗</a> }
+              </div>
+            }
+          }
+        </section>
+      } @else {
+        <section class="page-intro"><p class="eyebrow">THE NEXT 30 DAYS</p><h2>Class schedule</h2><p>Your upcoming classes and calendar events.</p></section>
+        <section class="content-card full-list-card">
+          @if (!schedule().length) { <div class="empty-list"><span aria-hidden="true">▦</span><strong>Your calendar is clear</strong><p>No classes or events are scheduled for the next 30 days.</p></div> }
+          @else {
+            @for (event of schedule(); track event.id) {
+              <div class="full-schedule-row"><div class="date-badge"><strong>{{ event.startsAt | date:'d' }}</strong><span>{{ event.startsAt | date:'MMM' }}</span></div><div class="assignment-details"><strong>{{ event.title }}</strong><small>{{ event.startsAt | date:'EEEE, MMMM d · h:mm a' }} @if (event.endsAt) { – {{ event.endsAt | date:'h:mm a' }} } @if (event.location) { · {{ event.location }} }</small></div>@if (event.url) { <a class="row-link" [href]="event.url" target="_blank" rel="noopener noreferrer" aria-label="Open {{ event.title }} in Canvas">↗</a> }</div>
+            }
+          }
+        </section>
+      }
+    }
+
+    <footer class="page-footer"><span>Take it one thoughtful step at a time.</span><span class="footer-leaf" aria-hidden="true">✧</span></footer>
+  </main>
+</div>

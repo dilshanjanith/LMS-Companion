@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/backend/" />
+  <Folder Name="/backend/src/">
+    <Project Path="backend/src/LmsCompanion.Api/LmsCompanion.Api.csproj" />
+    <Project Path="backend/src/LmsCompanion.Application/LmsCompanion.Application.csproj" />
+    <Project Path="backend/src/LmsCompanion.Domain/LmsCompanion.Domain.csproj" />
+    <Project Path="backend/src/LmsCompanion.Infrastructure/LmsCompanion.Infrastructure.csproj" />
+    <Project Path="backend/src/LmsCompanion.Mcp/LmsCompanion.Mcp.csproj" />
+    <Project Path="backend/src/LmsCompanion.Mcp.Local/LmsCompanion.Mcp.Local.csproj" />
+  </Folder>
+  <Folder Name="/backend/tests/">
+    <Project Path="backend/tests/LmsCompanion.IntegrationTests/LmsCompanion.IntegrationTests.csproj" />
+    <Project Path="backend/tests/LmsCompanion.UnitTests/LmsCompanion.UnitTests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,51 @@
+<main class="sign-in-page">
+  <section class="welcome-panel" aria-labelledby="welcome-title">
+    <header class="brand-lockup">
+      <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span>Campus Companion</span>
+    </header>
+
+    <div class="welcome-copy">
+      <p class="eyebrow">YOUR LEARNING, IN ONE PLACE</p>
+      <h1 id="welcome-title">A little more clarity for your semester.</h1>
+      <p class="intro">Bring your courses, upcoming work, and class schedule together in a calm space that helps you focus on what’s next.</p>
+
+      @if (config.loadError()) {
+        <div class="notice notice-error" role="alert">{{ config.loadError() }}</div>
+      } @else if (!configurationReady()) {
+        <div class="notice" role="status">
+          <strong>Sign-in needs setup</strong>
+          <span>Your administrator must configure the OIDC authority and client ID in <code>public/app-config.json</code>.</span>
+        </div>
+      }
+
+      @if (error()) {
+        <div class="notice notice-error" role="alert">{{ error() }}</div>
+      }
+
+      <button class="primary-button sign-in-button" type="button" [disabled]="!configurationReady() || signingIn()" (click)="signIn()">
+        @if (signingIn()) { <span class="spinner" aria-hidden="true"></span> Opening secure sign-in… }
+        @else { Sign in to continue <span aria-hidden="true">↗</span> }
+      </button>
+      <p class="small-note">Canvas access is granted separately. Your Canvas credentials stay protected by the server.</p>
+    </div>
+
+    <footer class="welcome-footer"><span class="status-dot" aria-hidden="true"></span> Secure access to your learning tools</footer>
+  </section>
+
+  <aside class="visual-panel" aria-label="A preview of your learning dashboard">
+    <div class="orbit orbit-one"></div>
+    <div class="orbit orbit-two"></div>
+    <div class="floating-note note-top"><span class="note-icon">✦</span><span>Make space for<br><strong>what matters</strong></span></div>
+    <div class="preview-card">
+      <div class="preview-top"><span class="preview-label">THIS WEEK</span><span class="preview-menu">•••</span></div>
+      <div class="preview-title">A clear view<br>of your week.</div>
+      <div class="preview-row"><span class="day-pill">TUE</span><span class="preview-task"><strong>Ecology seminar</strong><small>10:30 AM · Science Hall</small></span><span class="task-dot"></span></div>
+      <div class="preview-row"><span class="day-pill day-pill-gold">WED</span><span class="preview-task"><strong>Reading reflection</strong><small>Due at 11:59 PM</small></span><span class="task-dot task-dot-gold"></span></div>
+      <div class="preview-row"><span class="day-pill day-pill-blue">FRI</span><span class="preview-task"><strong>Statistics workshop</strong><small>2:00 PM · Online</small></span><span class="task-dot task-dot-blue"></span></div>
+      <div class="preview-footer"><span>Small steps add up.</span><span class="sparkle">✧</span></div>
+    </div>
+    <div class="floating-note note-bottom"><span class="progress-ring">↗</span><span>One thoughtful<br><strong>step at a time</strong></span></div>
+    <p class="visual-caption">A softer way to stay on top of things.</p>
+  </aside>
+</main>
