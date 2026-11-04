@@ -11,6 +11,25 @@ public sealed class LmsQueryService(
     private readonly IReadOnlyDictionary<LmsProviderType, ILmsProvider> _providers =
         providers.ToDictionary(provider => provider.ProviderType);
 
+    public async Task<CoursePageDto> GetCoursePageAsync(AuthenticatedUserContext user, Guid? connectionId, string courseId, string pageSlug, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(pageSlug) || pageSlug.Length > 512
+            || pageSlug is "." or ".." || pageSlug.IndexOfAny(['/', '\\', '?', '#']) >= 0)
+            throw new ArgumentException("Supply the page slug, not a full URL.", nameof(pageSlug));
+        var (context, provider) = await ResolveCourseAsync(user, connectionId, courseId, ct);
+        return await provider.GetCoursePageAsync(context, courseId, pageSlug, ct);
+    }
+
+    public async Task<LinkedResourceDto> GetLinkedResourceAsync(AuthenticatedUserContext user, Guid? connectionId, string courseId, string pageSlug, string resourceUrl, CancellationToken ct, int startOffset = 0)
+    {
+        if (string.IsNullOrWhiteSpace(pageSlug) || pageSlug.Length > 512 || pageSlug is "." or ".."
+            || pageSlug.IndexOfAny(['/', '\\', '?', '#']) >= 0 || string.IsNullOrWhiteSpace(resourceUrl)
+            || resourceUrl.Length > 2048 || startOffset < 0 || startOffset > 1_000_000)
+            throw new ArgumentException("Invalid linked resource request.");
+        var (context, provider) = await ResolveCourseAsync(user, connectionId, courseId, ct);
+        return await provider.GetLinkedResourceAsync(context, courseId, pageSlug, resourceUrl, ct, startOffset);
+    }
+
     public async Task<IReadOnlyList<CourseModuleDto>> GetCourseModulesAsync(AuthenticatedUserContext user, Guid? connectionId, string courseId, CancellationToken ct)
     {
         var (context, provider) = await ResolveCourseAsync(user, connectionId, courseId, ct);

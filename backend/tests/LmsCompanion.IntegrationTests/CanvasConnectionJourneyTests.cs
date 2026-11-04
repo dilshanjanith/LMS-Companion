@@ -94,6 +94,11 @@ public sealed class CanvasConnectionJourneyTests
         Assert.False(material.RootElement.GetProperty("result").TryGetProperty("isError", out var materialError) && materialError.GetBoolean(), material.RootElement.GetRawText());
         Assert.Contains("A strategy identifies the choices", material.RootElement.GetRawText(), StringComparison.Ordinal);
         Assert.DoesNotContain("synthetic-access", material.RootElement.GetRawText());
+        using var page = await CallTool(client, "get_course_page", new { connectionId, courseId = "1", pageSlug = "strategic-choices" });
+        Assert.False(page.RootElement.GetProperty("result").TryGetProperty("isError", out var pageError) && pageError.GetBoolean(), page.RootElement.GetRawText());
+        Assert.Contains("A strategy identifies the choices", page.RootElement.GetRawText());
+        using var deniedPage = await CallTool(client, "get_course_page", new { connectionId, courseId = "999", pageSlug = "strategic-choices" });
+        Assert.True(deniedPage.RootElement.GetProperty("result").GetProperty("isError").GetBoolean());
         using var foreignCourse = await CallTool(client, "get_learning_material",
             new { connectionId, courseId = "999", moduleId = "7", itemId = "9" });
         Assert.True(foreignCourse.RootElement.GetProperty("result").GetProperty("isError").GetBoolean());
@@ -111,6 +116,8 @@ public sealed class CanvasConnectionJourneyTests
         using var foreignDelete = await client.DeleteAsync($"/api/v1/connections/{connectionId}");
         Assert.Equal(HttpStatusCode.NotFound, foreignDelete.StatusCode);
         Assert.Equal(permittedReads, app.Services.GetRequiredService<CanvasHandler>().CourseReads);
+        using var foreignPage = await CallTool(client, "get_course_page", new { connectionId, courseId = "1", pageSlug = "strategic-choices" });
+        Assert.True(foreignPage.RootElement.GetProperty("result").GetProperty("isError").GetBoolean());
 
         SignIn(client, "owner");
         using var disconnected = await client.DeleteAsync($"/api/v1/connections/{connectionId}");
@@ -118,6 +125,8 @@ public sealed class CanvasConnectionJourneyTests
         Assert.Equal(1, app.Services.GetRequiredService<CanvasHandler>().Revocations);
         using var afterDisconnect = await CallTool(client, "get_my_courses", new { connectionId });
         Assert.True(afterDisconnect.RootElement.GetProperty("result").GetProperty("isError").GetBoolean());
+        using var pageAfterDisconnect = await CallTool(client, "get_course_page", new { connectionId, courseId = "1", pageSlug = "strategic-choices" });
+        Assert.True(pageAfterDisconnect.RootElement.GetProperty("result").GetProperty("isError").GetBoolean());
         Assert.Equal(permittedReads, app.Services.GetRequiredService<CanvasHandler>().CourseReads);
         using var finalScope = app.Services.CreateScope();
         Assert.Empty(await finalScope.ServiceProvider.GetRequiredService<CompanionDbContext>().LmsCredentials.ToListAsync());
@@ -324,7 +333,7 @@ public sealed class CanvasConnectionJourneyTests
                 { Content = JsonContent.Create(new { id = 9, title = "Strategic choices", type = "Page", page_url = "strategic-choices" }) });
             if (request.RequestUri.AbsolutePath == "/api/v1/courses/1/pages/strategic-choices")
                 return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-                { Content = JsonContent.Create(new { body = "<p>A strategy identifies the choices an organization makes.</p>" }) });
+                { Content = JsonContent.Create(new { url = "strategic-choices", title = "Strategic choices", body = "<p>A strategy identifies the choices an organization makes.</p>" }) });
             if (request.RequestUri.AbsolutePath == "/api/v1/courses/1/assignments")
                 return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
                 { Content = JsonContent.Create(new[] { new { id = 10, course_id = 1,

@@ -40,7 +40,7 @@ public sealed class McpServerTests
             .ToArray();
 
         Assert.Equal(
-            new[] { "get_connection_status", "get_my_courses", "get_upcoming_assignments", "get_class_schedule", "get_course_progress", "get_course_modules", "get_module_items", "get_learning_material" }.Order(),
+            new[] { "get_connection_status", "get_my_courses", "get_upcoming_assignments", "get_class_schedule", "get_course_progress", "get_course_modules", "get_module_items", "get_learning_material", "get_course_page", "get_linked_resource" }.Order(),
             names.Order());
 
         foreach (var tool in json.RootElement.GetProperty("result").GetProperty("tools").EnumerateArray())

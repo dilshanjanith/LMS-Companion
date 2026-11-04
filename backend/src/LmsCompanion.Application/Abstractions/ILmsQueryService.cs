@@ -4,6 +4,10 @@ namespace LmsCompanion.Application.Abstractions;
 
 public interface ILmsQueryService
 {
+    Task<CoursePageDto> GetCoursePageAsync(AuthenticatedUserContext user, Guid? connectionId, string courseId, string pageSlug, CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+    Task<LinkedResourceDto> GetLinkedResourceAsync(AuthenticatedUserContext user, Guid? connectionId, string courseId, string pageSlug, string resourceUrl, CancellationToken cancellationToken, int startOffset = 0) =>
+        throw new NotSupportedException();
     Task<IReadOnlyList<CourseModuleDto>> GetCourseModulesAsync(AuthenticatedUserContext user, Guid? connectionId, string courseId, CancellationToken cancellationToken) =>
         throw new NotSupportedException();
     Task<IReadOnlyList<ModuleItemDto>> GetModuleItemsAsync(AuthenticatedUserContext user, Guid? connectionId, string courseId, string moduleId, CancellationToken cancellationToken) =>

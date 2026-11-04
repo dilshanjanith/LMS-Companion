@@ -40,7 +40,7 @@ public static class McpErrorFilter
         ConnectionAccessDeniedException => "The requested LMS connection is unavailable.",
         NoActiveLmsConnectionException => "Call get_connection_status and open its managementUrl to connect an LMS account, then return to this chat.",
         ConnectionSelectionRequiredException => "Call get_connection_status and ask the user to choose a connectionId from their active connections.",
-        ArgumentException => "The requested input is invalid. Provide a valid date range of at most 90 days.",
+        ArgumentException => "The requested input is invalid. Check course, module, item, or page identifiers and any date range (at most 90 days). For a page, supply its final URL segment as pageSlug, not the full URL.",
         LmsProviderException { Code: LmsProviderFailureCode.NotFound } => "The requested LMS data is unavailable.",
         LmsProviderException { Code: LmsProviderFailureCode.NotSupported } => "This LMS does not provide the requested data.",
         LmsProviderException { Code: LmsProviderFailureCode.Unauthorized } => "Reconnect the LMS account before requesting this data.",

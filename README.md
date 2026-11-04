@@ -53,6 +53,8 @@ For a single-user Claude Desktop pilot using your own Canvas access token, follo
 
 For Claude with **live** portal-connected Stanford data, use the [LMS Companion Claude plugin](docs/lms-companion-plugin.md) and [live MCP tunnel guide](docs/claude-live-mcp-tunnel.md) (`LmsCompanion.Mcp` + Auth0 + personal token in the portal).
 
+For courses whose **Learning Path uses linked Pages instead of native Modules**, use the [direct page retrieval guide](docs/canvas-learning-paths.md). The live MCP tool `get_course_page` reads a known page slug and preserves linked readings, slides, videos, and other page links without requiring module IDs or an enabled Pages listing.
+
 For the free, client-neutral Stanford SEED **snapshot** demo, follow [the snapshot MCP and Cloudflare tunnel guide](docs/claude-web-cloudflare.md). That path uses `LmsCompanion.Mcp.Local` and imported JSON, not the authenticated product host.
 
 ## Build and test

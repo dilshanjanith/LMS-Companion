@@ -65,6 +65,8 @@ Then use modules and learning material:
 
 - `get_course_modules`, `get_module_items`, `get_learning_material`
 
+For Stanford's page-based Learning Path, use `get_course_page` with a known course ID and page slug even when modules are empty. See [the direct page guide](canvas-learning-paths.md) for the Learn/Apply examples and external-resource limits.
+
 For tutoring behavior (quizzes, cases, feedback), follow [learning-evaluation.md](learning-evaluation.md). Canvas tokens belong only in the portal, never in chat or the plugin files.
 
 ## Verification checklist
@@ -74,5 +76,6 @@ For tutoring behavior (quizzes, cases, feedback), follow [learning-evaluation.md
 - [ ] Claude sign-in completes with `read:lms`
 - [ ] `get_my_courses` returns the same course as the portal
 - [ ] One module item matches Canvas after `get_learning_material`
+- [ ] One Learning Path page matches Canvas after `get_course_page`, including its linked resources
 
 Automated integration tests cover personal-token storage and MCP reads with synthetic Canvas data; they do not replace Claude browser verification.
